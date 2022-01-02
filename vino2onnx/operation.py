@@ -17,7 +17,6 @@ import struct
 
 import numpy as np
 import onnx
-from dprint import dprint
 from onnx import AttributeProto, GraphProto, TensorProto, helper
 
 
