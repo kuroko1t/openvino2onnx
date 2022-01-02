@@ -14,11 +14,11 @@
 # =============================================================================
 
 import struct
-from dprint import dprint
+
 import numpy as np
 import onnx
-from onnx import helper
-from onnx import AttributeProto, TensorProto, GraphProto
+from dprint import dprint
+from onnx import AttributeProto, GraphProto, TensorProto, helper
 
 
 class Convolution:

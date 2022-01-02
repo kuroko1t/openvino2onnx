@@ -14,9 +14,11 @@
 # =============================================================================
 
 import xml.etree.ElementTree as ET
+
+from onnx import (AttributeProto, GraphProto, TensorProto, checker, helper,
+                  shape_inference)
+
 from .ops import operations
-from onnx import helper, checker, shape_inference
-from onnx import AttributeProto, TensorProto, GraphProto
 
 
 def get_inputNode(src_id, edges):
