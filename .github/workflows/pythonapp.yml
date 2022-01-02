@@ -16,6 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install Protbuf
+      run: sudo apt install -y protobuf-compiler
     - name: Set up Python 3.10.1
       uses: actions/setup-python@v1
       with:
