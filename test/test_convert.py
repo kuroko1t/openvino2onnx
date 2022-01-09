@@ -3,6 +3,7 @@ import vino2onnx
 import urllib.request
 import os
 
+
 class AgeGenderTests(unittest.TestCase):
     def __init__(self, *args, **kwargs):
         super(AgeGenderTests, self).__init__(*args, **kwargs)
@@ -14,4 +15,4 @@ class AgeGenderTests(unittest.TestCase):
         self.model_path = os.path.splitext(os.path.basename(fp32model_url))[0]
 
     def test_convert(self):
-        vino2onnx.create_model(self.model_path+".xml", self.model_path + ".bin")
+        vino2onnx.create_model(self.model_path + ".xml", self.model_path + ".bin")

@@ -24,6 +24,10 @@ output model -> age_gender.onnx
 * MaxPool
 * ReLU
 * SoftMax
+* Multiply
+* Concat
+* Unsqueeze
+* Reshape
 
 ## License
 Apache 2.0

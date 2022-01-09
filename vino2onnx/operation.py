@@ -20,19 +20,6 @@ import onnx
 from onnx import AttributeProto, GraphProto, TensorProto, helper
 
 
-class Convolution:
-    def make(self, layer_info):
-        node = onnx.helper.make_node(
-            "Conv",
-            inputs=layer_info["input_id"],
-            outputs=[layer_info["id"]],
-            pads=layer_info["pads_begin"] + layer_info["pads_end"],
-            strides=layer_info["strides"],
-            kernel_shape=layer_info["kernel_size"],
-        )
-        return node
-
-
 class Input:
     def make(self, layer_info):
         X = helper.make_tensor_value_info(
@@ -57,6 +44,8 @@ class Const:
         self.datatype_cfg = {
             "f32": ["f", 4],
             "f16": ["e", 2],
+            "i64": ["q", 8],
+            "i32": ["i", 4],
         }
         with open(weight_path, "rb") as f:
             self.weight = f.read()
@@ -66,6 +55,8 @@ class Const:
             layer_info["offset"] : layer_info["offset"] + layer_info["size"]
         ]
         data_type = layer_info["element_type"]
+        if not data_type in self.datatype_cfg:
+            raise Exception(f"not Supported Weight DataType:{data_type}")
         formatstring = "<" + self.datatype_cfg[data_type][0] * (
             len(weight) // self.datatype_cfg[data_type][1]
         )
@@ -86,6 +77,23 @@ class Const:
                 dims=layer_info["shape"],
                 vals=np_weight.flatten(),
             ),
+        )
+        return node
+
+    def value(self, layer_info):
+        np_weight = self.read(layer_info)
+        return np_weight
+
+
+class Convolution:
+    def make(self, layer_info):
+        node = onnx.helper.make_node(
+            "Conv",
+            inputs=layer_info["input_id"],
+            outputs=[layer_info["id"]],
+            pads=layer_info["pads_begin"] + layer_info["pads_end"],
+            strides=layer_info["strides"],
+            kernel_shape=layer_info["kernel_size"],
         )
         return node
 
@@ -131,5 +139,74 @@ class Softmax:
             inputs=layer_info["input_id"],
             axis=layer_info["axis"],
             outputs=[str(layer_info["id"])],
+        )
+        return node
+
+
+class Multiply:
+    def make(self, layer_info):
+        node = onnx.helper.make_node(
+            "Mul",
+            inputs=layer_info["input_id"],
+            outputs=[str(layer_info["id"])],
+        )
+        return node
+
+
+class Concat:
+    def make(self, layer_info):
+        node = onnx.helper.make_node(
+            "Concat",
+            inputs=layer_info["input_id"],
+            outputs=[str(layer_info["id"])],
+            axis=layer_info["axis"],
+        )
+        return node
+
+
+class ShapeOf:
+    def make(self, layer_info):
+        node = onnx.helper.make_node(
+            "Shape",
+            inputs=layer_info["input_id"],
+            outputs=[str(layer_info["id"])],
+        )
+        return node
+
+
+class Gather:
+    def make(self, layer_info, const_values):
+        print(const_values.keys())
+        print("gather:", layer_info["input_id"])
+        axis = const_values[layer_info["input_id"][2]][0]
+        # indices = const_values[layer_info["input_id"][1]][0]
+        print("axis:", axis)
+        node = onnx.helper.make_node(
+            "Gather",
+            inputs=[layer_info["input_id"][0], layer_info["input_id"][1]],
+            outputs=[str(layer_info["id"])],
+            axis=axis,
+        )
+        return node
+
+
+class Unsqueeze:
+    def make(self, layer_info):
+        node = onnx.helper.make_node(
+            "Unsqueeze",
+            inputs=layer_info["input_id"],
+            outputs=[str(layer_info["id"])],
+        )
+        return node
+
+
+class Reshape:
+    def make(self, layer_info):
+        node = onnx.helper.make_node(
+            "Reshape",
+            inputs=layer_info["input_id"],
+            outputs=[str(layer_info["id"])],
+            allowzero=1,  # if allowzero=1, final shape = (3, 4, 0)
+            # if allowzero=0, final shape = (3, 4, 4)
         )
         return node
