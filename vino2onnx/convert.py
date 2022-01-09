@@ -15,8 +15,14 @@
 
 import xml.etree.ElementTree as ET
 
-from onnx import (AttributeProto, GraphProto, TensorProto, checker, helper,
-                  shape_inference)
+from onnx import (
+    AttributeProto,
+    GraphProto,
+    TensorProto,
+    checker,
+    helper,
+    shape_inference,
+)
 
 from .ops import operations
 
@@ -51,7 +57,10 @@ def get_layer(root):
             layer_info["element_type"] = data_attr["element_type"]
             layer_info["offset"] = int(data_attr["offset"])
             layer_info["size"] = int(data_attr["size"])
-            layer_info["shape"] = [int(s) for s in data_attr["shape"].split(",")]
+            if data_attr["shape"] == "":
+                layer_info["shape"] = [1]
+            else:
+                layer_info["shape"] = [int(s) for s in data_attr["shape"].split(",")]
         else:
             layer_info["input_id"] = get_inputNode(layer_info["id"], edges)
         if layer_attr["type"] == "Result":
@@ -113,7 +122,7 @@ def get_layer(root):
                 layer_info["pads_end"] = pads_end
             else:
                 raise Exception("not Expected auto_pad:", data_attr["auto_pad"])
-        elif layer_attr["type"] == "SoftMax":
+        elif layer_attr["type"] == "SoftMax" or layer_attr["type"] == "Concat":
             data_attr = layer.find("data").attrib
             layer_info["axis"] = int(data_attr["axis"])
         layers_info.append(layer_info)
@@ -130,6 +139,7 @@ def create_model(model_path, weight_path):
     inputs = []
     outputs = []
     supported_ops = operations(weight_path)
+    const_values = {}
     for i, layer in enumerate(layers):
         if layer["type"] == "Parameter":
             print(f"Input Shape: {layer['input_shape']}")
@@ -139,10 +149,15 @@ def create_model(model_path, weight_path):
             outputs.append(supported_ops[layer["type"]].make(layer))
         else:
             if layer["type"] in supported_ops:
-                node = supported_ops[layer["type"]].make(layer)
+                if layer["type"] == "Gather":
+                    node = supported_ops[layer["type"]].make(layer, const_values)
+                else:
+                    node = supported_ops[layer["type"]].make(layer)
                 node_def.append(node)
             else:
                 raise Exception("not supported layer:", layer)
+        if layer["type"] == "Const":
+            const_values[layer["id"]] = supported_ops[layer["type"]].value(layer)
     graph_def = helper.make_graph(
         node_def,
         model_name,

@@ -27,6 +27,12 @@ def operations(weight_path):
     maxpool = MaxPool()
     relu = Relu()
     softmax = Softmax()
+    multiply = Multiply()
+    concat = Concat()
+    shapeof = ShapeOf()
+    gather = Gather()
+    unsqueeze = Unsqueeze()
+    reshape = Reshape()
 
     operations = {
         "Parameter": inp,
@@ -37,5 +43,11 @@ def operations(weight_path):
         "MaxPool": maxpool,
         "ReLU": relu,
         "SoftMax": softmax,
+        "Multiply": multiply,
+        "Concat": concat,
+        "ShapeOf": shapeof,
+        "Gather": gather,
+        "Unsqueeze": unsqueeze,
+        "Reshape": reshape,
     }
     return operations
