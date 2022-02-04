@@ -210,3 +210,21 @@ class Reshape:
             # if allowzero=0, final shape = (3, 4, 4)
         )
         return node
+
+class Subtract:
+    def make(self, layer_info):
+        node = onnx.helper.make_node(
+            "Sub",
+            inputs=layer_info["input_id"],
+            outputs=[str(layer_info["id"])],
+        )
+        return node
+
+class Clamp:
+    def make(self, layer_info):
+        node = onnx.helper.make_node(
+            "Clamp",
+            inputs=layer_info["input_id"],
+            outputs=[str(layer_info["id"])],
+        )
+        return node

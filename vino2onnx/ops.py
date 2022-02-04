@@ -33,6 +33,8 @@ def operations(weight_path):
     gather = Gather()
     unsqueeze = Unsqueeze()
     reshape = Reshape()
+    subtract = Subtract()
+    clamp = Clamp()
 
     operations = {
         "Parameter": inp,
@@ -49,5 +51,7 @@ def operations(weight_path):
         "Gather": gather,
         "Unsqueeze": unsqueeze,
         "Reshape": reshape,
+        "Subtract": subtract,
+        "Clamp": clamp,
     }
     return operations

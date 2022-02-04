@@ -125,6 +125,10 @@ def get_layer(root):
         elif layer_attr["type"] == "SoftMax" or layer_attr["type"] == "Concat":
             data_attr = layer.find("data").attrib
             layer_info["axis"] = int(data_attr["axis"])
+        elif layer_attr["type"] == "Clamp":
+            data_attr = layer.find("data").attrib
+            layer_info["min"] = data_attr["min"]
+            layer_info["max"] = data_attr["max"]
         layers_info.append(layer_info)
     return layers_info
 
