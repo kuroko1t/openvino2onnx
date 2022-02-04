@@ -176,11 +176,8 @@ class ShapeOf:
 
 class Gather:
     def make(self, layer_info, const_values):
-        print(const_values.keys())
-        print("gather:", layer_info["input_id"])
         axis = const_values[layer_info["input_id"][2]][0]
         # indices = const_values[layer_info["input_id"][1]][0]
-        print("axis:", axis)
         node = onnx.helper.make_node(
             "Gather",
             inputs=[layer_info["input_id"][0], layer_info["input_id"][1]],
@@ -222,9 +219,68 @@ class Subtract:
 
 class Clamp:
     def make(self, layer_info):
+        max_node = onnx.helper.make_node(
+            'Constant',
+            inputs=[],
+            outputs=[str(layer_info["id"])+"_max"],
+            value=onnx.helper.make_tensor(
+                name='const_tensor',
+                data_type=onnx.TensorProto.FLOAT,
+                dims=(1,),
+                vals=np.array([layer_info["max"]]),
+            ),
+        )
+        min_node = onnx.helper.make_node(
+            'Constant',
+            inputs=[],
+            outputs=[str(layer_info["id"])+"_min"],
+            value=onnx.helper.make_tensor(
+                name='const_tensor',
+                data_type=onnx.TensorProto.FLOAT,
+                dims=(1,),
+                vals=np.array([layer_info["min"]]),
+            ),
+        )
+        inputs = layer_info["input_id"] + \
+            [str(layer_info["id"])+"_max"] + \
+            [str(layer_info["id"])+"_max"]
         node = onnx.helper.make_node(
             "Clamp",
+            inputs= inputs,
+            outputs=[str(layer_info["id"])],
+        )
+        return node
+
+class GroupConvolution:
+    def make(self, layer_info):
+        node = onnx.helper.make_node(
+            "Conv",
+            inputs=layer_info["input_id"],
+            outputs=[layer_info["id"]],
+            pads=layer_info["pads_begin"] + layer_info["pads_end"],
+            strides=layer_info["strides"],
+            kernel_shape=layer_info["kernel_size"],
+        )
+        return node
+
+class Transpose:
+    def make(self, layer_info, const_values):
+        permute = const_values[layer_info["input_id"][1]]
+        node = onnx.helper.make_node(
+            "Transpose",
+            inputs=layer_info["input_id"],
+            perm=permute,
+            outputs=[str(layer_info["id"])],
+        )
+        return node
+
+
+class Elu:
+    def make(self, layer_info):
+        node = onnx.helper.make_node(
+            'Elu',
             inputs=layer_info["input_id"],
             outputs=[str(layer_info["id"])],
+            alpha=layer_info["alpha"]
         )
         return node

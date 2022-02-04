@@ -35,6 +35,9 @@ def operations(weight_path):
     reshape = Reshape()
     subtract = Subtract()
     clamp = Clamp()
+    groupconv = GroupConvolution()
+    transpose = Transpose()
+    elu = Elu()
 
     operations = {
         "Parameter": inp,
@@ -53,5 +56,8 @@ def operations(weight_path):
         "Reshape": reshape,
         "Subtract": subtract,
         "Clamp": clamp,
+        "GroupConvolution": groupconv,
+        "Transpose": transpose,
+        "Elu": elu,
     }
     return operations
