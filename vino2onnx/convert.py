@@ -15,14 +15,8 @@
 
 import xml.etree.ElementTree as ET
 
-from onnx import (
-    AttributeProto,
-    GraphProto,
-    TensorProto,
-    checker,
-    helper,
-    shape_inference,
-)
+from onnx import (AttributeProto, GraphProto, TensorProto, checker, helper,
+                  shape_inference)
 
 from .ops import operations
 
@@ -93,6 +87,7 @@ def get_layer(root):
             ][1]
             dims = [int(dim.text) for dim in dims]
             kernel_size = [dims[2], dims[3]]
+
             layer_info["kernel_size"] = kernel_size
             if data_attr["auto_pad"] == "explicit":
                 dilations = [int(d) for d in data_attr["dilations"].split(",")]
@@ -125,6 +120,13 @@ def get_layer(root):
         elif layer_attr["type"] == "SoftMax" or layer_attr["type"] == "Concat":
             data_attr = layer.find("data").attrib
             layer_info["axis"] = int(data_attr["axis"])
+        elif layer_attr["type"] == "Clamp":
+            data_attr = layer.find("data").attrib
+            layer_info["min"] = int(data_attr["min"])
+            layer_info["max"] = int(data_attr["max"])
+        elif layer_attr["type"] == "Elu":
+            data_attr = layer.find("data").attrib
+            layer_info["alpha"] = float(data_attr["alpha"])
         layers_info.append(layer_info)
     return layers_info
 
@@ -149,7 +151,7 @@ def create_model(model_path, weight_path):
             outputs.append(supported_ops[layer["type"]].make(layer))
         else:
             if layer["type"] in supported_ops:
-                if layer["type"] == "Gather":
+                if layer["type"] == "Gather" or layer["type"] == "Transpose":
                     node = supported_ops[layer["type"]].make(layer, const_values)
                 else:
                     node = supported_ops[layer["type"]].make(layer)
