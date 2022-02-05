@@ -28,6 +28,10 @@ output model -> age_gender.onnx
 * Concat
 * Unsqueeze
 * Reshape
+* Subtract
+* Clamp
+* Transpose
+* Elu
 
 ## License
 Apache 2.0
