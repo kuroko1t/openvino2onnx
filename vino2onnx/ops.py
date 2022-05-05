@@ -28,6 +28,7 @@ def operations(weight_path):
     relu = Relu()
     softmax = Softmax()
     multiply = Multiply()
+    matmul = MatMul()
     concat = Concat()
     shapeof = ShapeOf()
     gather = Gather()
@@ -59,5 +60,6 @@ def operations(weight_path):
         "GroupConvolution": groupconv,
         "Transpose": transpose,
         "Elu": elu,
+        "MatMul": matmul,
     }
     return operations

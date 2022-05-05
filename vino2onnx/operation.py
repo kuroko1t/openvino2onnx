@@ -153,6 +153,16 @@ class Multiply:
         return node
 
 
+class MatMul:
+    def make(self, layer_info):
+        node = onnx.helper.make_node(
+            "MatMul",
+            inputs=layer_info["input_id"],
+            outputs=[str(layer_info["id"])],
+        )
+        return node
+
+
 class Concat:
     def make(self, layer_info):
         node = onnx.helper.make_node(
