@@ -29,6 +29,10 @@ model_urls = [
         "https://storage.openvinotoolkit.org/repositories/open_model_zoo/2022.1/models_bin/3/head-pose-estimation-adas-0001/FP32/head-pose-estimation-adas-0001.xml",
         "https://storage.openvinotoolkit.org/repositories/open_model_zoo/2022.1/models_bin/3/head-pose-estimation-adas-0001/FP32/head-pose-estimation-adas-0001.bin",
     ],
+    [
+        "https://raw.githubusercontent.com/geaxgx/openvino_hand_tracker/main/models/palm_detection_FP32.xml",
+        "https://github.com/geaxgx/openvino_hand_tracker/raw/main/models/palm_detection_FP32.bin",
+    ],
 ]
 
 

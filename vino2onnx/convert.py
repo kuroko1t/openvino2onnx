@@ -15,14 +15,8 @@
 
 import xml.etree.ElementTree as ET
 
-from onnx import (
-    AttributeProto,
-    GraphProto,
-    TensorProto,
-    checker,
-    helper,
-    shape_inference,
-)
+from onnx import (AttributeProto, GraphProto, TensorProto, checker, helper,
+                  shape_inference)
 
 from .ops import operations
 
@@ -104,11 +98,31 @@ def get_layer(root):
                 layer_info["pads_begin"] = pads_begin
                 layer_info["pads_end"] = pads_end
                 layer_info["strides"] = strides
+            elif data_attr["auto_pad"] == "valid":
+                layer_info["audo_pad"] = "VALID"
+                dilations = [int(d) for d in data_attr["dilations"].split(",")]
+                pads_begin = [int(d) for d in data_attr["pads_begin"].split(",")]
+                pads_end = [int(d) for d in data_attr["pads_end"].split(",")]
+                strides = [int(d) for d in data_attr["strides"].split(",")]
+                layer_info["dilations"] = dilations
+                layer_info["pads_begin"] = pads_begin
+                layer_info["pads_end"] = pads_end
+                layer_info["strides"] = strides
+            elif data_attr["auto_pad"] == "same_upper":
+                layer_info["audo_pad"] = "SAME_UPPER"
+                dilations = [int(d) for d in data_attr["dilations"].split(",")]
+                pads_begin = [int(d) for d in data_attr["pads_begin"].split(",")]
+                pads_end = [int(d) for d in data_attr["pads_end"].split(",")]
+                strides = [int(d) for d in data_attr["strides"].split(",")]
+                layer_info["dilations"] = dilations
+                layer_info["pads_begin"] = pads_begin
+                layer_info["pads_end"] = pads_end
+                layer_info["strides"] = strides
             else:
                 raise Exception("not Expected auto_pad:", data_attr["auto_pad"])
         elif layer_attr["type"] == "MaxPool":
             data_attr = layer.find("data").attrib
-            if data_attr["auto_pad"] == "explicit":
+            if data_attr["auto_pad"] == "explicit" or data_attr["auto_pad"] == "":
                 kernel = [int(d) for d in data_attr["kernel"].split(",")]
                 pads_begin = [int(d) for d in data_attr["pads_begin"].split(",")]
                 pads_end = [int(d) for d in data_attr["pads_end"].split(",")]
@@ -121,8 +135,19 @@ def get_layer(root):
                 layer_info["kernel"] = kernel
                 layer_info["pads_begin"] = pads_begin
                 layer_info["pads_end"] = pads_end
+            if data_attr["auto_pad"] == "same_upper":
+                kernel = [int(d) for d in data_attr["kernel"].split(",")]
+                pads_begin = [int(d) for d in data_attr["pads_begin"].split(",")]
+                pads_end = [int(d) for d in data_attr["pads_end"].split(",")]
+                strides = [int(d) for d in data_attr["strides"].split(",")]
+                layer_info["strides"] = strides
+                layer_info["kernel"] = kernel
+                layer_info["pads_begin"] = pads_begin
+                layer_info["pads_end"] = pads_end
             else:
-                raise Exception("not Expected auto_pad:", data_attr["auto_pad"])
+                raise Exception(
+                    "not Expected auto_pad:", data_attr["auto_pad"], data_attr
+                )
         elif layer_attr["type"] == "SoftMax" or layer_attr["type"] == "Concat":
             data_attr = layer.find("data").attrib
             layer_info["axis"] = int(data_attr["axis"])
