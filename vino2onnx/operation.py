@@ -208,6 +208,7 @@ class Reshape:
         )
         return node
 
+
 class Subtract:
     def make(self, layer_info):
         node = onnx.helper.make_node(
@@ -217,39 +218,43 @@ class Subtract:
         )
         return node
 
+
 class Clamp:
     def make(self, layer_info):
         max_node = onnx.helper.make_node(
-            'Constant',
+            "Constant",
             inputs=[],
-            outputs=[str(layer_info["id"])+"_max"],
+            outputs=[str(layer_info["id"]) + "_max"],
             value=onnx.helper.make_tensor(
-                name='const_tensor',
+                name="const_tensor",
                 data_type=onnx.TensorProto.FLOAT,
                 dims=(1,),
                 vals=np.array([layer_info["max"]]),
             ),
         )
         min_node = onnx.helper.make_node(
-            'Constant',
+            "Constant",
             inputs=[],
-            outputs=[str(layer_info["id"])+"_min"],
+            outputs=[str(layer_info["id"]) + "_min"],
             value=onnx.helper.make_tensor(
-                name='const_tensor',
+                name="const_tensor",
                 data_type=onnx.TensorProto.FLOAT,
                 dims=(1,),
                 vals=np.array([layer_info["min"]]),
             ),
         )
-        inputs = layer_info["input_id"] + \
-            [str(layer_info["id"])+"_max"] + \
-            [str(layer_info["id"])+"_max"]
+        inputs = (
+            layer_info["input_id"]
+            + [str(layer_info["id"]) + "_max"]
+            + [str(layer_info["id"]) + "_max"]
+        )
         node = onnx.helper.make_node(
             "Clamp",
-            inputs= inputs,
+            inputs=inputs,
             outputs=[str(layer_info["id"])],
         )
         return node
+
 
 class GroupConvolution:
     def make(self, layer_info):
@@ -262,6 +267,7 @@ class GroupConvolution:
             kernel_shape=layer_info["kernel_size"],
         )
         return node
+
 
 class Transpose:
     def make(self, layer_info, const_values):
@@ -278,9 +284,9 @@ class Transpose:
 class Elu:
     def make(self, layer_info):
         node = onnx.helper.make_node(
-            'Elu',
+            "Elu",
             inputs=layer_info["input_id"],
             outputs=[str(layer_info["id"])],
-            alpha=layer_info["alpha"]
+            alpha=layer_info["alpha"],
         )
         return node

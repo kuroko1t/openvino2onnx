@@ -15,8 +15,14 @@
 
 import xml.etree.ElementTree as ET
 
-from onnx import (AttributeProto, GraphProto, TensorProto, checker, helper,
-                  shape_inference)
+from onnx import (
+    AttributeProto,
+    GraphProto,
+    TensorProto,
+    checker,
+    helper,
+    shape_inference,
+)
 
 from .ops import operations
 
