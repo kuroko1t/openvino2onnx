@@ -21,6 +21,7 @@ output model -> age_gender.onnx
 
 * [age-gender-recognition-retail-0013](https://github.com/openvinotoolkit/open_model_zoo/tree/master/models/intel/age-gender-recognition-retail-0013)
 * [human-pose-estimation-0001](https://github.com/openvinotoolkit/open_model_zoo/tree/master/models/intel/human-pose-estimation-0001)
+* [head-pose-estimation-adas-0001](https://github.com/openvinotoolkit/open_model_zoo/tree/master/models/intel/head-pose-estimation-adas-0001)
 * [facial-landmarks-35-adas-0002](https://github.com/openvinotoolkit/open_model_zoo/tree/master/models/intel/facial-landmarks-35-adas-0002)
 
 ## Support OpenVINO OP
@@ -31,6 +32,7 @@ output model -> age_gender.onnx
 * ReLU
 * SoftMax
 * Multiply
+* MatMul
 * Concat
 * Unsqueeze
 * Reshape
